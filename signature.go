@@ -4,6 +4,8 @@ import (
 	"bytes"
 	"fmt"
 
+	"github.com/Project-Arda/bgls/bgls"
+	"github.com/Project-Arda/bgls/curves"
 	. "github.com/tendermint/tmlibs/common"
 )
 
@@ -18,6 +20,17 @@ type Signature interface {
 	Bytes() []byte
 	IsZero() bool
 	Equals(Signature) bool
+}
+
+//-------------------------------------
+
+type AggregatableSignature interface {
+	Bytes() []byte
+	IsZero() bool
+	Equals(AggregatableSignature) bool
+
+	// Assigns value into caller.
+	Aggregate([]AggregatableSignature) (AggregatableSignature, bool)
 }
 
 //-------------------------------------
@@ -78,4 +91,44 @@ func (sig SignatureSecp256k1) Equals(other Signature) bool {
 	} else {
 		return false
 	}
+}
+
+//-------------------------------------
+
+var _ AggregatableSignature = SignatureAltbn128{}
+
+// Implements Aggregate Signature
+type SignatureAltbn128 struct {
+	sig curves.Point
+}
+
+func (sig SignatureAltbn128) Bytes() []byte {
+	return sig.sig.Marshal()
+}
+
+func (sig SignatureAltbn128) IsZero() bool {
+	if sig.sig == nil {
+		return false
+	}
+	return sig.sig.Equals(curves.Altbn128.GetG1Infinity())
+}
+
+func (sig SignatureAltbn128) Equals(other AggregatableSignature) bool {
+	if otherBn, ok := other.(SignatureAltbn128); ok {
+		return sig.Equals(otherBn)
+	} else {
+		return false
+	}
+}
+
+func (sig SignatureAltbn128) Aggregate(signatures []AggregatableSignature) (AggregatableSignature, bool) {
+	altbnSigs := make([]curves.Point, len(signatures))
+	for i := len(signatures) - 1; i >= 0; i-- {
+		if sigi, ok := signatures[i].(SignatureAltbn128); ok {
+			altbnSigs[i] = sigi.sig
+		} else {
+			return nil, false
+		}
+	}
+	return SignatureAltbn128{bgls.AggregateSignatures(altbnSigs)}, true
 }

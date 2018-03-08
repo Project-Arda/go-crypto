@@ -2,7 +2,10 @@ package crypto
 
 import (
 	"crypto/subtle"
+	"math/big"
 
+	"github.com/Project-Arda/bgls/bgls"
+	"github.com/Project-Arda/bgls/curves"
 	secp256k1 "github.com/btcsuite/btcd/btcec"
 	"github.com/tendermint/ed25519"
 	"github.com/tendermint/ed25519/extra25519"
@@ -21,6 +24,16 @@ type PrivKey interface {
 	Sign(msg []byte) Signature
 	PubKey() PubKey
 	Equals(PrivKey) bool
+}
+
+//-------------------------------------
+
+type AggregatablePrivKey interface {
+	Bytes() []byte
+	Sign(msg []byte) AggregatableSignature
+	PubKey() AggregatablePubKey
+	Equals(AggregatablePrivKey) bool
+	Authenticate() AggregatableSignature
 }
 
 //-------------------------------------
@@ -182,4 +195,44 @@ func GenPrivKeySecp256k1FromSecret(secret []byte) PrivKeySecp256k1 {
 	privKeyBytes := [32]byte{}
 	copy(privKeyBytes[:], priv.Serialize())
 	return PrivKeySecp256k1(privKeyBytes)
+}
+
+//-------------------------------------
+
+var _ AggregatablePrivKey = PrivKeyAltbn128{}
+
+// Implements AggregatablePrivKey
+type PrivKeyAltbn128 struct {
+	key *big.Int
+}
+
+func (privKey PrivKeyAltbn128) Bytes() []byte {
+	return privKey.key.Bytes()
+}
+
+func (privKey PrivKeyAltbn128) Sign(msg []byte) AggregatableSignature {
+	return SignatureAltbn128{bgls.KoskSign(curves.Altbn128, privKey.key, msg)}
+}
+
+func (privKey PrivKeyAltbn128) PubKey() AggregatablePubKey {
+	return PubKeyAltbn128{bgls.LoadPublicKey(curves.Altbn128, privKey.key)}
+}
+
+// Equals - you probably don't need to use this.
+// Runs in constant time based on length of the keys.
+func (privKey PrivKeyAltbn128) Equals(other AggregatablePrivKey) bool {
+	if otherBn, ok := other.(PrivKeyAltbn128); ok {
+		return subtle.ConstantTimeCompare(privKey.Bytes(), otherBn.Bytes()) == 1
+	} else {
+		return false
+	}
+}
+
+func (privKey PrivKeyAltbn128) Authenticate() AggregatableSignature {
+	return SignatureAltbn128{bgls.Authenticate(curves.Altbn128, privKey.key)}
+}
+
+func GenPrivKeyAltbn128() PrivKeyAltbn128 {
+	priv, _, _ := bgls.KeyGen(curves.Altbn128)
+	return PrivKeyAltbn128{priv}
 }
