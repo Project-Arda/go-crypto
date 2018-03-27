@@ -2,13 +2,13 @@
 
 
 [[projects]]
-  branch = "develop"
+  branch = "multiplicity"
   name = "github.com/Project-Arda/bgls"
   packages = [
     "bgls",
     "curves"
   ]
-  revision = "09ce6e2c91f2dacd6b6eea64c20f0ffcb12bd9fc"
+  revision = "909ce76315b4307b9cae27e557a67e8f59f7d4b5"
 
 [[projects]]
   branch = "master"
@@ -192,6 +192,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ee2dbc11fd07948033554a48d9b726a089bd3f1432d62b758a35dde9662ea224"
+  inputs-digest = "a6bc0db5ec78e676bfde146af3bd29bd2637a15f58ee84733978eba3d7d5192d"
   solver-name = "gps-cdcl"
   solver-version = 1
