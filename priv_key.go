@@ -4,7 +4,8 @@ import (
 	"crypto/subtle"
 	"math/big"
 
-	"github.com/Project-Arda/bgls"
+	"github.com/Project-Arda/bgls/bgls"
+	"github.com/Project-Arda/bgls/curves"
 	secp256k1 "github.com/btcsuite/btcd/btcec"
 	"github.com/tendermint/ed25519"
 	"github.com/tendermint/ed25519/extra25519"
@@ -209,11 +210,11 @@ func (privKey PrivKeyAltbn128) Bytes() []byte {
 }
 
 func (privKey PrivKeyAltbn128) Sign(msg []byte) AggregatableSignature {
-	return SignatureAltbn128{bgls.Sign(bgls.Altbn128, privKey.key, msg)}
+	return SignatureAltbn128{bgls.Sign(curves.Altbn128, privKey.key, msg)}
 }
 
 func (privKey PrivKeyAltbn128) PubKey() AggregatablePubKey {
-	return PubKeyAltbn128{bgls.LoadPublicKey(bgls.Altbn128, privKey.key)}
+	return PubKeyAltbn128{bgls.LoadPublicKey(curves.Altbn128, privKey.key)}
 }
 
 // Equals - you probably don't need to use this.
@@ -227,5 +228,5 @@ func (privKey PrivKeyAltbn128) Equals(other AggregatablePrivKey) bool {
 }
 
 func (privKey PrivKeyAltbn128) Authenticate() AggregatableSignature {
-	return SignatureAltbn128{bgls.Authenticate(bgls.Altbn128, privKey.key)}
+	return SignatureAltbn128{bgls.Authenticate(curves.Altbn128, privKey.key)}
 }

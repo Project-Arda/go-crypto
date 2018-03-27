@@ -5,7 +5,8 @@ import (
 	"crypto/sha256"
 	"fmt"
 
-	"github.com/Project-Arda/bgls"
+	"github.com/Project-Arda/bgls/bgls"
+	"github.com/Project-Arda/bgls/curves"
 	secp256k1 "github.com/btcsuite/btcd/btcec"
 	"github.com/tendermint/ed25519"
 	"github.com/tendermint/ed25519/extra25519"
@@ -43,8 +44,9 @@ type AggregatablePubKey interface {
 
 	// Assigns value into caller.
 	Aggregate([]AggregatablePubKey) (PubKeyAltbn128, bool)
-	VerifyAggregateSignature(msgs [][]byte, keys []AggregatablePubKey, sig AggregatableSignature, duplicates bool) bool
+	VerifyAggregateSignature(msgs [][]byte, keys []AggregatablePubKey, sig AggregatableSignature) bool
 	VerifyMultiSignature(msg []byte, keys []AggregatablePubKey, sig AggregatableSignature) bool
+	VerifyMultiSignatureWithMultiplicity(msg []byte, keys []AggregatablePubKey, multi []int64, sig AggregatableSignature) bool
 }
 
 //-------------------------------------
@@ -167,7 +169,7 @@ var _ AggregatablePubKey = PubKeyAltbn128{}
 
 // Implements AggregatablePubKey.
 type PubKeyAltbn128 struct {
-	key bgls.Point2
+	key curves.Point2
 }
 
 func (pubKey PubKeyAltbn128) Address() Address {
@@ -184,7 +186,7 @@ func (pubKey PubKeyAltbn128) Bytes() []byte {
 func (pubKey PubKeyAltbn128) CheckAuthentication(sig_ AggregatableSignature) bool {
 	// make sure we use the same algorithm to sign
 	if sig, ok := sig_.(SignatureAltbn128); ok {
-		return bgls.CheckAuthentication(bgls.Altbn128, pubKey.key, sig.sig)
+		return bgls.CheckAuthentication(curves.Altbn128, pubKey.key, sig.sig)
 	}
 	return false
 }
@@ -192,7 +194,7 @@ func (pubKey PubKeyAltbn128) CheckAuthentication(sig_ AggregatableSignature) boo
 func (pubKey PubKeyAltbn128) VerifyBytes(msg []byte, sig_ AggregatableSignature) bool {
 	// make sure we use the same algorithm to sign
 	if sig, ok := sig_.(SignatureAltbn128); ok {
-		return bgls.Verify(bgls.Altbn128, pubKey.key, msg, sig.sig)
+		return bgls.Verify(curves.Altbn128, pubKey.key, msg, sig.sig)
 	}
 	return false
 }
@@ -208,8 +210,8 @@ func (pubKey PubKeyAltbn128) Equals(other AggregatablePubKey) bool {
 	return false
 }
 
-func convertPubKeysToBglsPoints(keys []AggregatablePubKey) ([]bgls.Point2, bool) {
-	altbnKeys := make([]bgls.Point2, len(keys))
+func convertPubKeysToBglsPoints(keys []AggregatablePubKey) ([]curves.Point2, bool) {
+	altbnKeys := make([]curves.Point2, len(keys))
 	for i := len(keys) - 1; i >= 0; i-- {
 		if key, ok := keys[i].(PubKeyAltbn128); ok {
 			altbnKeys[i] = key.key
@@ -227,13 +229,13 @@ func (pubKey PubKeyAltbn128) Aggregate(keys []AggregatablePubKey) (PubKeyAltbn12
 	return PubKeyAltbn128{nil}, false
 }
 
-func (pubKey PubKeyAltbn128) VerifyAggregateSignature(msgs [][]byte, keys []AggregatablePubKey, sig AggregatableSignature, duplicates bool) bool {
+func (pubKey PubKeyAltbn128) VerifyAggregateSignature(msgs [][]byte, keys []AggregatablePubKey, sig AggregatableSignature) bool {
 	aggSig, ok := sig.(SignatureAltbn128)
 	if !ok {
 		return false
 	}
 	if altbnKeys, ok := convertPubKeysToBglsPoints(keys); ok {
-		return bgls.VerifyAggregateSignature(bgls.Altbn128, aggSig.sig, altbnKeys, msgs, duplicates)
+		return bgls.VerifyAggregateSignature(curves.Altbn128, aggSig.sig, altbnKeys, msgs)
 	}
 	return false
 }
@@ -244,7 +246,18 @@ func (pubKey PubKeyAltbn128) VerifyMultiSignature(msgs []byte, keys []Aggregatab
 		return false
 	}
 	if altbnKeys, ok := convertPubKeysToBglsPoints(keys); ok {
-		return bgls.VerifyMultiSignature(bgls.Altbn128, aggSig.sig, altbnKeys, msgs)
+		return bgls.VerifyMultiSignature(curves.Altbn128, aggSig.sig, altbnKeys, msgs)
+	}
+	return false
+}
+
+func (pubKey PubKeyAltbn128) VerifyMultiSignatureWithMultiplicity(msg []byte, keys []AggregatablePubKey, multi []int64, sig AggregatableSignature) bool {
+	aggSig, ok := sig.(SignatureAltbn128)
+	if !ok {
+		return false
+	}
+	if altbnKeys, ok := convertPubKeysToBglsPoints(keys); ok {
+		return bgls.VerifyMultiSignatureWithMultiplicity(curves.Altbn128, aggSig.sig, altbnKeys, multi, msg)
 	}
 	return false
 }

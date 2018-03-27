@@ -5,7 +5,8 @@ import (
 	"encoding/hex"
 	"testing"
 
-	"github.com/Project-Arda/bgls"
+	"github.com/Project-Arda/bgls/bgls"
+	"github.com/Project-Arda/bgls/curves"
 	"github.com/btcsuite/btcutil/base58"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -58,7 +59,7 @@ func TestAltbnMultisig(t *testing.T) {
 		signers := make([]AggregatablePubKey, Signers)
 		sigs := make([]AggregatableSignature, Signers)
 		for j := 0; j < Signers; j++ {
-			sk, vk, _ := bgls.KeyGen(bgls.Altbn128)
+			sk, vk, _ := bgls.KeyGen(curves.Altbn128)
 			sigs[j] = PrivKeyAltbn128{sk}.Sign(msg)
 			signers[j] = PubKeyAltbn128{vk}
 		}
@@ -81,7 +82,7 @@ func TestAltbnAggsig(t *testing.T) {
 	for i := 0; i < N; i++ {
 		msgs[i] = make([]byte, Size)
 		rand.Read(msgs[i])
-		sk, vk, _ := bgls.KeyGen(bgls.Altbn128)
+		sk, vk, _ := bgls.KeyGen(curves.Altbn128)
 		privKey := PrivKeyAltbn128{sk}
 		sig := privKey.Sign(msgs[i])
 		signers[i] = PubKeyAltbn128{vk}
@@ -96,5 +97,5 @@ func TestAltbnAggsig(t *testing.T) {
 		require.False(t, signers[i].CheckAuthentication(lastAuth), "Creating Authentication suceeded on wrong key")
 	}
 	aggSig, _ := new(SignatureAltbn128).Aggregate(sigs)
-	require.True(t, signers[0].VerifyAggregateSignature(msgs, signers, aggSig, false), "Verify Aggregate Signature failed.")
+	require.True(t, signers[0].VerifyAggregateSignature(msgs, signers, aggSig), "Verify Aggregate Signature failed.")
 }

@@ -5,7 +5,8 @@ import (
 	"fmt"
 	"math/big"
 
-	"github.com/Project-Arda/bgls"
+	"github.com/Project-Arda/bgls/bgls"
+	"github.com/Project-Arda/bgls/curves"
 	. "github.com/tendermint/tmlibs/common"
 )
 
@@ -99,7 +100,7 @@ var _ AggregatableSignature = SignatureAltbn128{}
 
 // Implements Aggregate Signature
 type SignatureAltbn128 struct {
-	sig bgls.Point1
+	sig curves.Point1
 }
 
 func (sig SignatureAltbn128) Bytes() []byte {
@@ -124,7 +125,7 @@ func (sig SignatureAltbn128) Equals(other AggregatableSignature) bool {
 }
 
 func (sig SignatureAltbn128) Aggregate(signatures []AggregatableSignature) (AggregatableSignature, bool) {
-	altbnSigs := make([]bgls.Point1, len(signatures))
+	altbnSigs := make([]curves.Point1, len(signatures))
 	for i := len(signatures) - 1; i >= 0; i-- {
 		if sig, ok := signatures[i].(SignatureAltbn128); ok {
 			altbnSigs[i] = sig.sig
