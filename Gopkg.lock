@@ -2,13 +2,10 @@
 
 
 [[projects]]
-  branch = "multiplicity"
   name = "github.com/Project-Arda/bgls"
-  packages = [
-    "bgls",
-    "curves"
-  ]
-  revision = "909ce76315b4307b9cae27e557a67e8f59f7d4b5"
+  packages = ["."]
+  revision = "8f4191040f56f6d029cb85fd9f05e5335fe76b0e"
+  version = "v0.4.2"
 
 [[projects]]
   branch = "master"
@@ -100,6 +97,12 @@
   revision = "b84e30acd515aadc4b783ad4ff83aff3299bdfe0"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/mimoo/GoKangarooTwelve"
+  packages = ["K12"]
+  revision = "f494cd819f1cc16409f6425ea0f398882187bbd6"
+
+[[projects]]
   name = "github.com/pkg/errors"
   packages = ["."]
   revision = "645ef00459ed84a119197bfb8d8205042c6df63d"
@@ -176,7 +179,6 @@
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
-    "blake2b",
     "blowfish",
     "nacl/secretbox",
     "openpgp/armor",
@@ -192,6 +194,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a6bc0db5ec78e676bfde146af3bd29bd2637a15f58ee84733978eba3d7d5192d"
+  inputs-digest = "aecac59bcfa40949ee0d644bfb0b7c4f18c8fd1c18b33bc9b9fd686dc45fca24"
   solver-name = "gps-cdcl"
   solver-version = 1
