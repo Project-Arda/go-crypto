@@ -2,6 +2,15 @@
 
 
 [[projects]]
+  branch = "multiplicity"
+  name = "github.com/Project-Arda/bgls"
+  packages = [
+    "bgls",
+    "curves"
+  ]
+  revision = "909ce76315b4307b9cae27e557a67e8f59f7d4b5"
+
+[[projects]]
   branch = "master"
   name = "github.com/btcsuite/btcd"
   packages = ["btcec"]
@@ -18,6 +27,21 @@
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/dchest/blake2b"
+  packages = ["."]
+  revision = "06006a921c7d13e3fdf63c401cb0e4529a26e6e4"
+
+[[projects]]
+  name = "github.com/ethereum/go-ethereum"
+  packages = [
+    "crypto/bn256/cloudflare",
+    "crypto/sha3"
+  ]
+  revision = "329ac18ef617d0238f71637bffe78f028b0f13f7"
+  version = "v1.8.3"
 
 [[projects]]
   name = "github.com/go-kit/kit"
@@ -152,6 +176,7 @@
   name = "golang.org/x/crypto"
   packages = [
     "bcrypt",
+    "blake2b",
     "blowfish",
     "nacl/secretbox",
     "openpgp/armor",
@@ -159,13 +184,14 @@
     "pbkdf2",
     "poly1305",
     "ripemd160",
-    "salsa20/salsa"
+    "salsa20/salsa",
+    "sha3"
   ]
   revision = "b4956d363a8b14623cc81db401707679605930a3"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9748e96106582387ac49df1db8e4456bd51c8e9362c86992d6ce7011c1783f55"
+  inputs-digest = "a6bc0db5ec78e676bfde146af3bd29bd2637a15f58ee84733978eba3d7d5192d"
   solver-name = "gps-cdcl"
   solver-version = 1

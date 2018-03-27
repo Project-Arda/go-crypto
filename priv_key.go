@@ -229,3 +229,8 @@ func (privKey PrivKeyAltbn128) Equals(other AggregatablePrivKey) bool {
 func (privKey PrivKeyAltbn128) Authenticate() AggregatableSignature {
 	return SignatureAltbn128{bgls.Authenticate(bgls.Altbn128, privKey.key)}
 }
+
+func GenPrivKeyAltbn128() PrivKeyAltbn128 {
+	priv, _, _ := bgls.KeyGen(curves.Altbn128)
+	return PrivKeyAltbn128{priv}
+}
