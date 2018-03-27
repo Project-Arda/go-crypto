@@ -58,10 +58,6 @@ ignored = ["github.com/dis2/bls12"]
   name = "github.com/tyler-smith/go-bip39"
   branch = "master"
 
-[[constraint]]
-  name = "github.com/Project-Arda/bgls"
-  branch = "multiplicity"
-
 [prune]
   go-tests = true
   unused-packages = true
