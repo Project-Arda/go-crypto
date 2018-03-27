@@ -235,3 +235,8 @@ func GenPrivKeyAltbn128() PrivKeyAltbn128 {
 	priv, _, _ := bgls.KeyGen(curves.Altbn128)
 	return PrivKeyAltbn128{priv}
 }
+
+func GenPrivKeyAltbn128() PrivKeyAltbn128 {
+	priv, _, _ := bgls.KeyGen(curves.Altbn128)
+	return PrivKeyAltbn128{priv}
+}
