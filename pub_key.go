@@ -172,6 +172,14 @@ type PubKeyAltbn128 struct {
 	key curves.Point2
 }
 
+func NewPubKeyAltbn128FromBytes(data []byte) (*PubKeyAltbn128, bool) {
+	p, ok := curves.Altbn128.UnmarshalG2(data)
+	if !ok {
+		return nil, false
+	}
+	return &PubKeyAltbn128{p}, true
+}
+
 func (pubKey PubKeyAltbn128) Address() Address {
 	// append type byte
 	hasher := ripemd160.New()
