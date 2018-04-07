@@ -60,7 +60,7 @@ ignored = ["github.com/dis2/bls12"]
 
 [[constraint]]
   name = "github.com/Project-Arda/bgls"
-  branch = "multiplicity"
+  branch = "master"
 
 [prune]
   go-tests = true

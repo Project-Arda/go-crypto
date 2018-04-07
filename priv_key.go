@@ -210,7 +210,7 @@ func (privKey PrivKeyAltbn128) Bytes() []byte {
 }
 
 func (privKey PrivKeyAltbn128) Sign(msg []byte) AggregatableSignature {
-	return SignatureAltbn128{bgls.Sign(curves.Altbn128, privKey.key, msg)}
+	return SignatureAltbn128{bgls.KoskSign(curves.Altbn128, privKey.key, msg)}
 }
 
 func (privKey PrivKeyAltbn128) PubKey() AggregatablePubKey {

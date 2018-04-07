@@ -3,7 +3,6 @@ package crypto
 import (
 	"bytes"
 	"fmt"
-	"math/big"
 
 	"github.com/Project-Arda/bgls/bgls"
 	"github.com/Project-Arda/bgls/curves"
@@ -100,7 +99,7 @@ var _ AggregatableSignature = SignatureAltbn128{}
 
 // Implements Aggregate Signature
 type SignatureAltbn128 struct {
-	sig curves.Point1
+	sig curves.Point
 }
 
 func (sig SignatureAltbn128) Bytes() []byte {
@@ -111,9 +110,7 @@ func (sig SignatureAltbn128) IsZero() bool {
 	if sig.sig == nil {
 		return false
 	}
-	x, y := sig.sig.ToAffineCoords()
-	zero := big.NewInt(0)
-	return x.Cmp(zero) != 0 && y.Cmp(zero) != 0
+	return sig.sig.Equals(curves.Altbn128.GetG1Infinity())
 }
 
 func (sig SignatureAltbn128) Equals(other AggregatableSignature) bool {
@@ -125,13 +122,13 @@ func (sig SignatureAltbn128) Equals(other AggregatableSignature) bool {
 }
 
 func (sig SignatureAltbn128) Aggregate(signatures []AggregatableSignature) (AggregatableSignature, bool) {
-	altbnSigs := make([]curves.Point1, len(signatures))
+	altbnSigs := make([]curves.Point, len(signatures))
 	for i := len(signatures) - 1; i >= 0; i-- {
-		if sig, ok := signatures[i].(SignatureAltbn128); ok {
-			altbnSigs[i] = sig.sig
+		if sigi, ok := signatures[i].(SignatureAltbn128); ok {
+			altbnSigs[i] = sigi.sig
 		} else {
 			return nil, false
 		}
 	}
-	return SignatureAltbn128{bgls.AggregateG1(altbnSigs)}, true
+	return SignatureAltbn128{bgls.AggregateSignatures(altbnSigs)}, true
 }

@@ -84,9 +84,8 @@ func TestAltbnAggsig(t *testing.T) {
 		rand.Read(msgs[i])
 		sk, vk, _ := bgls.KeyGen(curves.Altbn128)
 		privKey := PrivKeyAltbn128{sk}
-		sig := privKey.Sign(msgs[i])
 		signers[i] = PubKeyAltbn128{vk}
-		sigs[i] = sig
+		sigs[i] = privKey.Sign(msgs[i])
 
 		pubKey := privKey.PubKey()
 		require.True(t, pubKey.Equals(signers[i]), "Copies of the same public key don't equal itself")
